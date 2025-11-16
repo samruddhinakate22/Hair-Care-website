@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mavrick HairCare • Hair products, routine builder, and ingredient guide</title>
+  <meta name="description" content="Discover hair care products by hair type and concern. Build your routine, learn hair science, and shop cleansers, conditioners, treatments, and stylers. Frontend-only demo with localStorage." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%F0%9F%92%86%3C/text%3E%3C/svg%3E" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style>
+    .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    input[type=number]::-webkit-outer-spin-button, input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type=number] { -moz-appearance: textfield; }
+    .line-clamp-2 { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .chip { @apply px-3 py-1.5 rounded-full text-sm ring-1 ring-black/5 dark:ring-white/10 hover:bg-stone-100 dark:hover:bg-white/10; }
+  </style>
+</head>
+<body class="bg-stone-50 text-stone-900 dark:bg-neutral-950 dark:text-neutral-100 selection:bg-rose-200/60 selection:text-stone-900">
+  <!-- Header -->
+  <header class="sticky top-0 z-50 backdrop-blur bg-white/80 dark:bg-black/30 border-b border-black/5 dark:border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="flex items-center gap-3 justify-between py-3">
+        <a href="#home" class="flex items-center gap-2">
+          <span class="text-2xl">🔮🌿</span>
+          <div>
+            <div class="font-bold tracking-wide">GlossIQ</div>
+            <div class="text-xs text-stone-500 dark:text-neutral-400">Hair products • Routine builder • Guide</div>
+          </div>
+        </a>
+        <!-- Search (desktop) -->
+        <form id="searchForm" class="hidden md:flex flex-1 max-w-2xl mx-4">
+          <div class="flex items-center gap-2 w-full bg-white dark:bg-neutral-900 ring-1 ring-black/5 dark:ring-white/10 rounded-lg px-3 py-2">
+            <span>🔎</span>
+            <input id="searchInput" type="text" placeholder="Search products, ingredients, concerns..." class="bg-transparent w-full outline-none text-sm" />
+          </div>
+        </form>
+        <div class="flex items-center gap-1 sm:gap-2">
+          <button id="themeToggle" class="p-2 rounded-md hover:bg-stone-100 dark:hover:bg-white/10" aria-label="Toggle theme">
+            <span id="iconLight" class="hidden">🌙</span>
+            <span id="iconDark">🌞</span>
+          </button>
+          <button id="btnWishlist" class="relative px-3 py-2 rounded-md hover:bg-stone-100 dark:hover:bg-white/10" aria-label="Wishlist">♡
+            <span id="wishCount" class="absolute -top-1 -right-1 text-[10px] px-1.5 py-0.5 rounded-full bg-rose-600 text-white">0</span>
+          </button>
+          <button id="btnCart" class="relative px-3 py-2 rounded-md hover:bg-stone-100 dark:hover:bg-white/10" aria-label="Cart">🛍️
+            <span id="cartCount" class="absolute -top-1 -right-1 text-[10px] px-1.5 py-0.5 rounded-full bg-rose-600 text-white">0</span>
+          </button>
+        </div>
+      </div>
+      <!-- Mobile search -->
+      <form id="searchFormMobile" class="md:hidden pb-3">
+        <div class="flex items-center gap-2 w-full bg-white dark:bg-neutral-900 ring-1 ring-black/5 dark:ring-white/10 rounded-lg px-3 py-2">
+          <span>🔎</span>
+          <input id="searchInputMobile" type="text" placeholder="Search products, ingredients, concerns..." class="bg-transparent w-full outline-none text-sm" />
+        </div>
+      </form>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section id="home" class="relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-b from-rose-100/70 via-pink-50 to-transparent dark:from-rose-900/10 dark:via-transparent pointer-events-none"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="grid md:grid-cols-2 gap-8 items-center py-10 sm:py-16">
+        <div class="reveal">
+          <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight">Healthy Hair Starts With The Right Routine</h1>
+          <p class="mt-3 text-stone-600 dark:text-neutral-300">Shop dermatologist-approved formulas and build a routine tailored to your hair type and concerns.</p>
+          <div class="mt-5 flex gap-3">
+            <a href="#shop" class="inline-flex items-center gap-2 bg-stone-900 dark:bg-white text-white dark:text-stone-900 px-5 py-3 rounded-md shadow hover:opacity-90">Shop Hair Care</a>
+            <a href="#routine" class="inline-flex items-center gap-2 bg-rose-600 hover:bg-rose-700 text-white px-5 py-3 rounded-md shadow">Build My Routine</a>
+          </div>
+          <div class="mt-6 text-sm text-stone-600 dark:text-neutral-300">Sulfate-free • Silicone-free options • Color-safe picks</div>
+        </div>
+        <div class="reveal relative">
+          <div class="aspect-[4/3] rounded-2xl overflow-hidden shadow-xl ring-1 ring-black/5 dark:ring-white/10">
+            <img src=https://images.unsplash.com/photo-1489278353717-f64c6ee8a4d2?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D alt="Hair care routine" class="w-full h-full object-cover" />
+          </div>
+          <div class="absolute -bottom-4 -left-4 bg-white/90 dark:bg-black/60 backdrop-blur px-4 py-3 rounded-xl shadow ring-1 ring-black/5 dark:ring-white/10 hidden sm:flex items-center gap-3">
+            <span class="text-2xl">✨</span>
+            <span class="text-sm">Up to 40% off on treatment serums</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Results & Reviews -->
+  <section id="results" class="py-14 bg-white dark:bg-neutral-950 border-t border-black/5 dark:border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="reveal">
+        <h2 class="text-2xl font-bold">Real Results. Real Reviews.</h2>
+        <div class="mt-4 grid sm:grid-cols-4 gap-3">
+          <div class="p-4 rounded-lg bg-stone-50 dark:bg-white/5 ring-1 ring-black/5 dark:ring-white/10 text-center"><div class="text-2xl">👩‍⚕️</div><div class="mt-1 text-sm font-medium">Derm-approved</div></div>
+          <div class="p-4 rounded-lg bg-stone-50 dark:bg-white/5 ring-1 ring-black/5 dark:ring-white/10 text-center"><div class="text-2xl">💖</div><div class="mt-1 text-sm font-medium">100K+ happy customers</div></div>
+          <div class="p-4 rounded-lg bg-stone-50 dark:bg-white/5 ring-1 ring-black/5 dark:ring-white/10 text-center"><div class="text-2xl">⭐</div><div class="mt-1 text-sm font-medium">4.5+ average rating</div></div>
+          <div class="p-4 rounded-lg bg-stone-50 dark:bg-white/5 ring-1 ring-black/5 dark:ring-white/10 text-center"><div class="text-2xl">📆</div><div class="mt-1 text-sm font-medium">30‑day moisture challenge</div></div>
+        </div>
+        <div class="mt-4 p-4 rounded-lg bg-rose-50 dark:bg-rose-900/20 ring-1 ring-rose-200/60 dark:ring-rose-900/30">
+          <div class="text-xs uppercase tracking-wide text-rose-700 dark:text-rose-300">Healthy hair tip</div>
+          <div id="tipsTicker" class="mt-1 text-sm text-rose-700 dark:text-rose-300">Hydration first: apply leave-in on damp hair to lock moisture.</div>
+        </div>
+        <div class="mt-6">
+          <div class="relative max-w-3xl mx-auto">
+            <div class="relative aspect-[16/9] rounded-xl overflow-hidden ring-1 ring-black/5 dark:ring-white/10">
+              <img id="baAfter" src="https://images.unsplash.com/photo-1512591290879-bb2cdc7c2deb?q=80&w=1400&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover" alt="After"/>
+              <div id="baOverlay" class="absolute inset-0" style="width:50%; overflow:hidden;">
+                <img id="baBefore" src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=1400&auto=format&fit=crop" class="w-full h-full object-cover" alt="Before"/>
+              </div>
+              <div id="baHandle" class="absolute top-0 bottom-0" style="left:50%;">
+                <div class="w-0.5 h-full bg-white/80 backdrop-blur"></div>
+              </div>
+            </div>
+            <input id="baSlider" type="range" min="0" max="100" value="50" class="w-full mt-3">
+            <div class="flex justify-between text-xs text-stone-500"><span>Before</span><span>After</span></div>
+          </div>
+        </div>
+        <div class="mt-10">
+          <div class="p-4 rounded-xl bg-white dark:bg-neutral-900 ring-1 ring-black/5 dark:ring-white/10">
+            <div id="testiCard"></div>
+            <div class="mt-3 flex items-center justify-between">
+              <button id="testiPrev" class="px-3 py-1.5 rounded-md ring-1 ring-black/10 dark:ring-white/20">Prev</button>
+              <button id="testiNext" class="px-3 py-1.5 rounded-md ring-1 ring-black/10 dark:ring-white/20">Next</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Shop Controls -->
+  <section id="shop" class="py-8 bg-gradient-to-b from-transparent to-stone-100/60 dark:to-white/5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="flex flex-col gap-4">
+        <div class="flex flex-wrap gap-2 items-center">
+          <span class="text-xs uppercase tracking-wide text-stone-500 dark:text-neutral-400">Hair Type</span>
+          <div id="typeChips" class="flex flex-wrap gap-2"></div>
+        </div>
+        <div class="flex flex-wrap gap-2 items-center">
+          <span class="text-xs uppercase tracking-wide text-stone-500 dark:text-neutral-400">Concern</span>
+          <div id="concernChips" class="flex flex-wrap gap-2"></div>
+        </div>
+        <div class="flex flex-wrap gap-2 items-center">
+          <span class="text-xs uppercase tracking-wide text-stone-500 dark:text-neutral-400">Filters</span>
+          <label class="chip flex items-center gap-2 cursor-pointer"><input id="fltSulfate" type="checkbox" class="accent-rose-600"> <span>Sulfate-free</span></label>
+          <label class="chip flex items-center gap-2 cursor-pointer"><input id="fltSilicone" type="checkbox" class="accent-rose-600"> <span>Silicone-free</span></label>
+          <label class="chip flex items-center gap-2 cursor-pointer"><input id="fltColorSafe" type="checkbox" class="accent-rose-600"> <span>Color-safe</span></label>
+          <div class="flex-1"></div>
+          <div class="flex items-center gap-2 bg-white dark:bg-neutral-900 ring-1 ring-black/5 dark:ring-white/10 rounded-lg px-3 py-2">
+            <label for="priceRange" class="text-xs text-stone-500 dark:text-neutral-400">Max Price</label>
+            <input id="priceRange" type="range" min="0" max="5000" step="50" class="w-40" />
+            <span id="priceLabel" class="text-sm tabular-nums">₹5000</span>
+          </div>
+          <div class="flex items-center gap-2 bg-white dark:bg-neutral-900 ring-1 ring-black/5 dark:ring-white/10 rounded-lg px-3 py-2">
+            <label for="sortBy" class="text-xs text-stone-500 dark:text-neutral-400">Sort</label>
+            <select id="sortBy" class="bg-transparent outline-none text-sm">
+              <option value="pop">Top Rated</option>
+              <option value="plh">Price: Low to High</option>
+              <option value="phl">Price: High to Low</option>
+              <option value="new">Newest</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Grid -->
+      <div id="productGrid" class="mt-6 grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+      <div id="emptyState" class="hidden mt-10 text-center text-stone-500 dark:text-neutral-400">No products match your search or filters. Try adjusting them.</div>
+    </div>
+  </section>
+
+  <!-- Wishlist Panel -->
+  <div id="wishPanel" class="fixed inset-0 z-[100] hidden">
+    <div class="absolute inset-0 bg-black/50" data-close></div>
+    <div class="absolute right-0 top-0 h-full w-full sm:w-[440px] bg-white dark:bg-neutral-900 shadow-2xl ring-1 ring-black/10 dark:ring-white/10 p-5 flex flex-col">
+      <div class="flex items-start justify-between">
+        <div>
+          <h3 class="text-lg font-semibold">Your Picks</h3>
+          <p class="text-sm text-stone-500 dark:text-neutral-400">Save favorites to view later.</p>
+        </div>
+        <button class="p-2 rounded-md hover:bg-stone-100 dark:hover:bg-white/10" data-close aria-label="Close">✕</button>
+      </div>
+      <div id="wishItems" class="mt-4 space-y-3 flex-1 overflow-auto"></div>
+      <div class="pt-3 border-t border-black/5 dark:border-white/10 text-sm text-stone-500 dark:text-neutral-400">Saved locally on this device.</div>
+    </div>
+  </div>
+
+  <!-- Cart Drawer -->
+  <div id="cartDrawer" class="fixed inset-0 z-[100] hidden">
+    <div class="absolute inset-0 bg-black/50" data-close></div>
+    <div class="absolute right-0 top-0 h-full w-full sm:w-[480px] bg-white dark:bg-neutral-900 shadow-2xl ring-1 ring-black/10 dark:ring-white/10 p-5 flex flex-col">
+      <div class="flex items-start justify-between">
+        <div>
+          <h3 class="text-lg font-semibold">Your Cart</h3>
+          <p class="text-sm text-stone-500 dark:text-neutral-400">Free delivery above ₹499</p>
+        </div>
+        <button class="p-2 rounded-md hover:bg-stone-100 dark:hover:bg-white/10" data-close aria-label="Close">✕</button>
+      </div>
+      <div id="cartItems" class="mt-4 space-y-3 flex-1 overflow-auto"></div>
+      <div class="mt-3 p-3 rounded-lg bg-stone-50 dark:bg-white/5">
+        <div class="flex items-center gap-2">
+          <input id="coupon" class="flex-1 px-3 py-2 rounded-md bg-white dark:bg-neutral-800 outline-none ring-1 ring-black/5 dark:ring-white/10" placeholder="Apply coupon (e.g., SAVE10)" />
+          <button id="applyCoupon" class="px-3 py-2 rounded-md bg-stone-900 dark:bg-white text-white dark:text-stone-900">Apply</button>
+        </div>
+        <div id="couponMsg" class="mt-1 text-xs text-stone-600 dark:text-neutral-300"></div>
+      </div>
+      <div class="mt-3 space-y-1 text-sm">
+        <div class="flex justify-between"><span>Subtotal</span><span id="subTotal" class="tabular-nums">₹0</span></div>
+        <div class="flex justify-between"><span>Discount</span><span id="discount" class="tabular-nums text-green-700 dark:text-green-400">-₹0</span></div>
+        <div class="flex justify-between font-semibold text-lg"><span>Total</span><span id="grandTotal" class="tabular-nums">₹0</span></div>
+      </div>
+      <button id="checkoutBtn" class="mt-3 inline-flex items-center justify-center gap-2 bg-rose-600 hover:bg-rose-700 text-white px-4 py-3 rounded-md shadow">Proceed to Checkout</button>
+    </div>
+  </div>
+
+  <!-- Product Modal -->
+  <div id="productModal" class="fixed inset-0 z-[100] hidden">
+    <div class="absolute inset-0 bg-black/50" data-close></div>
+    <div class="absolute inset-x-4 sm:inset-x-0 mx-auto top-10 sm:top-16 max-w-2xl p-6 rounded-2xl bg-white dark:bg-neutral-900 shadow-2xl ring-1 ring-black/10 dark:ring-white/10">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <h3 id="pmTitle" class="text-xl font-semibold">Product</h3>
+          <div id="pmMeta" class="text-sm text-stone-600 dark:text-neutral-400"></div>
+        </div>
+        <button class="p-2 rounded-md hover:bg-stone-100 dark:hover:bg-white/10" data-close aria-label="Close">✕</button>
+      </div>
+      <div class="mt-4 grid sm:grid-cols-2 gap-4">
+        <div class="aspect-square overflow-hidden rounded-xl ring-1 ring-black/5 dark:ring-white/10">
+          <img id="pmImg" class="w-full h-full object-cover" alt="Product image" />
+        </div>
+        <div>
+          <div id="pmDesc" class="text-sm text-stone-700 dark:text-neutral-300"></div>
+          <div class="mt-3 text-2xl font-bold" id="pmPrice">₹0</div>
+          <div class="mt-1 text-sm" id="pmSuit"></div>
+          <div class="mt-1 text-sm" id="pmTargets"></div>
+          <div class="mt-1 text-sm" id="pmIngr"></div>
+          <div class="mt-1 text-sm" id="pmFree"></div>
+          <div class="mt-2 text-xs text-stone-500" id="pmPH"></div>
+          <div class="mt-2 text-xs text-stone-500" id="pmHow"></div>
+          <div class="mt-4 flex items-center gap-3">
+            <input id="pmQty" type="number" min="1" value="1" class="w-20 px-3 py-2 rounded-md bg-stone-50 dark:bg-neutral-800 outline-none" />
+            <button id="pmAdd" class="inline-flex items-center gap-2 bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-md shadow">Add to Cart</button>
+            <button id="pmWish" class="inline-flex items-center gap-2 ring-1 ring-black/10 dark:ring-white/20 px-4 py-2 rounded-md hover:bg-stone-100 dark:hover:bg-white/10">♡ Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Routine Builder -->
+  <section id="routine" class="py-16 bg-stone-50/70 dark:bg-white/5 border-t border-black/5 dark:border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="reveal">
+        <h2 class="text-2xl font-bold">Build Your Hair Routine</h2>
+        <p class="mt-2 text-stone-600 dark:text-neutral-300">Pick your hair type and top concern; we’ll recommend a Cleanse → Condition → Treat → Style regimen.</p>
+        <div class="mt-4 grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <select id="rbType" class="px-3 py-2 rounded-md bg-white dark:bg-neutral-900 ring-1 ring-black/5 dark:ring-white/10">
+            <option>Straight</option>
+            <option>Wavy</option>
+            <option>Curly</option>
+            <option>Coily</option>
+          </select>
+          <select id="rbConcern" class="px-3 py-2 rounded-md bg-white dark:bg-neutral-900 ring-1 ring-black/5 dark:ring-white/10">
+            <option>Frizz</option>
+            <option>Dandruff</option>
+            <option>Hairfall</option>
+            <option>Dryness</option>
+            <option>Color Damage</option>
+            <option>Oily Scalp</option>
+          </select>
+          <button id="rbBuild" class="sm:col-span-2 lg:col-span-1 inline-flex items-center justify-center gap-2 bg-stone-900 dark:bg-white text-white dark:text-stone-900 px-4 py-2 rounded-md">Recommend</button>
+          <button id="rbClear" class="lg:col-span-1 inline-flex items-center justify-center gap-2 ring-1 ring-black/10 dark:ring-white/20 px-4 py-2 rounded-md hover:bg-stone-100 dark:hover:bg-white/10">Clear</button>
+        </div>
+      </div>
+      <div id="routineOut" class="mt-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+    </div>
+  </section>
+
+  <!-- Learn -->
+  <section id="learn" class="py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 grid md:grid-cols-2 gap-8 items-start">
+      <div class="reveal">
+        <h2 class="text-2xl font-bold">Hair Basics & Science</h2>
+        <div class="mt-4 space-y-4">
+          <details class="p-4 rounded-lg bg-white dark:bg-neutral-900 ring-1 ring-black/5 dark:ring-white/10" open>
+            <summary class="cursor-pointer font-semibold">Hair Anatomy</summary>
+            <p class="mt-2 text-sm text-stone-600 dark:text-neutral-300">Each strand has a cuticle (outer protective layer), cortex (strength & pigment), and medulla (core, sometimes absent). Damage raises cuticles, causing frizz and dullness. Conditioning smooths cuticles; proteins reinforce the cortex.</p>
+          </details>
+          <details class="p-4 rounded-lg bg-white dark:bg-neutral-900 ring-1 ring-black/5 dark:ring-white/10">
+            <summary class="cursor-pointer font-semibold">Porosity & The Float Test</summary>
+            <p class="mt-2 text-sm text-stone-600 dark:text-neutral-300">Drop a clean strand in a glass of water. If it floats for long, porosity is low (products sit on hair). If it sinks fast, porosity is high (needs richer hydration and sealing oils). Adjust product weight accordingly.</p>
+          </details>
+          <details class="p-4 rounded-lg bg-white dark:bg-neutral-900 ring-1 ring-black/5 dark:ring-white/10">
+            <summary class="cursor-pointer font-semibold">Curl Types (1A–4C)</summary>
+            <p class="mt-2 text-sm text-stone-600 dark:text-neutral-300">Type 1 is straight, 2 is wavy, 3 is curly, 4 is coily. The tighter the curl, the drier hair tends to be. Use leave-ins and oils to lock moisture, and avoid heavy silicones if build-up occurs.</p>
+          </details>
+        </div>
+      </div>
+      <div class="reveal">
+        <h3 class="text-lg font-semibold">Ingredient Glossary</h3>
+        <div class="mt-2 text-sm text-stone-600 dark:text-neutral-300">Search ingredients to learn what they do.</div>
+        <div class="mt-3">
+          <input id="ingSearch" class="w-full px-3 py-2 rounded-md bg-white dark:bg-neutral-900 ring-1 ring-black/5 dark:ring-white/10 outline-none" placeholder="e.g., Niacinamide, Tea Tree, Argan" />
+        </div>
+        <div id="ingGrid" class="mt-4 grid sm:grid-cols-2 gap-3"></div>
+
+        <h3 class="text-lg font-semibold mt-8">Hair Encyclopedia</h3>
+        <div class="mt-2 text-sm text-stone-600 dark:text-neutral-300">Explore deep-dive topics about hair structure, growth, chemistry, and care. Tap a topic to learn more.</div>
+        <div id="hairTabs" class="mt-3 flex flex-wrap gap-2"></div>
+        <div id="hairTabContent" class="mt-3 p-4 rounded-lg bg-white dark:bg-neutral-900 ring-1 ring-black/5 dark:ring-white/10 text-sm text-stone-700 dark:text-neutral-300"></div>
+
+        <h3 class="text-lg font-semibold mt-8">Hair Profile Quiz</h3>
+        <div class="mt-2 text-sm text-stone-600 dark:text-neutral-300">Build a personalized hair profile and get a Cleanse → Condition → Treat → Style routine plus care tips.</div>
+        <form id="hairQuiz" class="mt-3 grid sm:grid-cols-2 gap-3 p-4 rounded-lg bg-white dark:bg-neutral-900 ring-1 ring-black/5 dark:ring-white/10">
+          <label class="text-sm">Hair Type
+            <select id="hqType" class="mt-1 w-full px-3 py-2 rounded-md bg-stone-50 dark:bg-neutral-800 outline-none">
+              <option>Straight</option>
+              <option>Wavy</option>
+              <option>Curly</option>
+              <option>Coily</option>
+            </select>
+          </label>
+          <label class="text-sm">Porosity
+            <select id="hqPorosity" class="mt-1 w-full px-3 py-2 rounded-md bg-stone-50 dark:bg-neutral-800 outline-none">
+              <option>Low</option>
+              <option>Medium</option>
+              <option>High</option>
+            </select>
+          </label>
+          <label class="text-sm">Density
+            <select id="hqDensity" class="mt-1 w-full px-3 py-2 rounded-md bg-stone-50 dark:bg-neutral-800 outline-none">
+              <option>Low</option>
+              <option>Medium</option>
+              <option>High</option>
+            </select>
+          </label>
+          <label class="text-sm">Strand Thickness
+            <select id="hqThickness" class="mt-1 w-full px-3 py-2 rounded-md bg-stone-50 dark:bg-neutral-800 outline-none">
+              <option>Fine</option>
+              <option>Medium</option>
+              <option>Coarse</option>
+            </select>
+          </label>
+          <label class="text-sm">Scalp Type
+            <select id="hqScalp" class="mt-1 w-full px-3 py-2 rounded-md bg-stone-50 dark:bg-neutral-800 outline-none">
+              <option>Oily</option>
+              <option>Normal</option>
+              <option>Dry</option>
+              <option>Sensitive</option>
+            </select>
+          </label>
+          <label class="text-sm">Top Concern
+            <select id="hqConcern" class="mt-1 w-full px-3 py-2 rounded-md bg-stone-50 dark:bg-neutral-800 outline-none">
+              <option>Frizz</option>
+              <option>Dandruff</option>
+              <option>Hairfall</option>
+              <option>Dryness</option>
+              <option>Color Damage</option>
+              <option>Oily Scalp</option>
+            </select>
+          </label>
+          <label class="flex items-center gap-2 text-sm"><input id="hqColorTreated" type="checkbox" class="accent-rose-600"> Color-treated</label>
+          <label class="flex items-center gap-2 text-sm"><input id="hqHeat" type="checkbox" class="accent-rose-600"> I heat style weekly</label>
+          <div class="sm:col-span-2 flex gap-3 pt-1">
+            <button class="inline-flex items-center justify-center gap-2 bg-stone-900 dark:bg-white text-white dark:text-stone-900 px-4 py-2 rounded-md" type="submit">Build Profile</button>
+            <button id="hqClear" class="inline-flex items-center justify-center gap-2 ring-1 ring-black/10 dark:ring-white/20 px-4 py-2 rounded-md hover:bg-stone-100 dark:hover:bg-white/10" type="button">Clear</button>
+          </div>
+        </form>
+        <div id="quizAdvice" class="mt-3 text-sm text-stone-700 dark:text-neutral-300"></div>
+        <div id="quizResult" class="mt-4 grid sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="py-16 bg-stone-50/70 dark:bg-white/5 border-t border-black/5 dark:border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      <h2 class="text-2xl font-bold">Frequently Asked Questions</h2>
+      <div class="mt-4 grid md:grid-cols-2 gap-4">
+        <details class="p-4 rounded-lg bg-white dark:bg-neutral-900 ring-1 ring-black/5 dark:ring-white/10" open>
+          <summary class="cursor-pointer font-semibold">How often should I wash my hair?</summary>
+          <p class="mt-2 text-sm text-stone-600 dark:text-neutral-300">Oily scalps may need daily or alternate-day cleansing; dry or curly hair may wash 1–2 times/week. Use a gentle, sulfate-free cleanser if washing frequently.</p>
+        </details>
+        <details class="p-4 rounded-lg bg-white dark:bg-neutral-900 ring-1 ring-black/5 dark:ring-white/10">
+          <summary class="cursor-pointer font-semibold">What is the correct order of products?</summary>
+          <p class="mt-2 text-sm text-stone-600 dark:text-neutral-300">Cleanse → Condition → Treat (mask/serum) → Style (leave-in/gel/oil). On scalp-concern days, use targeted treatments before conditioning.</p>
+        </details>
+        <details class="p-4 rounded-lg bg-white dark:bg-neutral-900 ring-1 ring-black/5 dark:ring-white/10">
+          <summary class="cursor-pointer font-semibold">Are silicones bad?</summary>
+          <p class="mt-2 text-sm text-stone-600 dark:text-neutral-300">Not necessarily. Lightweight, water-soluble silicones can aid slip and frizz control. If you notice build-up, clarify weekly and opt for silicone-free stylers.</p>
+        </details>
+        <details class="p-4 rounded-lg bg-white dark:bg-neutral-900 ring-1 ring-black/5 dark:ring-white/10">
+          <summary class="cursor-pointer font-semibold">Color-safe routine tips</summary>
+          <p class="mt-2 text-sm text-stone-600 dark:text-neutral-300">Use color-safe, low-pH cleansers and UV-protect stylers. Limit heat and deep-condition weekly to preserve vibrancy.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tech & Backend -->
+  <section id="tech" class="py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 grid md:grid-cols-2 gap-8 items-start">
+      <div class="reveal">
+        <h2 class="text-2xl font-bold">Tech & Backend</h2>
+        <p class="mt-2 text-stone-600 dark:text-neutral-300">This frontend-only demo uses HTML, Tailwind CSS, and vanilla JavaScript. It is not affiliated with any brand. Cart and wishlist are stored in your browser via localStorage.</p>
+        <ul class="mt-4 list-disc pl-5 text-sm text-stone-700 dark:text-neutral-300 space-y-2">
+          <li>No external APIs; products and ingredients are in-file arrays.</li>
+          <li>Coupon demo: use <span class="font-medium">SAVE10</span> for 10% off.</li>
+          <li>To connect a backend, add routes like GET /api/products, POST /api/cart and swap local handlers for fetch().</li>
+        </ul>
+      </div>
+      <div class="reveal">
+        <h3 class="text-lg font-semibold">Privacy</h3>
+        <p class="mt-2 text-sm text-stone-600 dark:text-neutral-300">No data leaves your browser in this demo. Clearing site data resets your cart, picks, and routine.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-10 border-t border-black/5 dark:border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <span class="text-xl">💇‍♀️</span>
+        <span class="font-semibold">Mavrick HairCare</span>
+      </div>
+      <div class="text-xs text-stone-500 dark:text-neutral-400">
+        © <span id="year"></span> • Frontend demo for educational purposes.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Theme toggle
+    const htmlEl = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const iconLight = document.getElementById('iconLight');
+    const iconDark = document.getElementById('iconDark');
+    function setTheme(mode){
+      if(mode === 'dark'){ htmlEl.classList.add('dark'); iconLight.classList.remove('hidden'); iconDark.classList.add('hidden'); }
+      else { htmlEl.classList.remove('dark'); iconLight.classList.add('hidden'); iconDark.classList.remove('hidden'); }
+      localStorage.setItem('theme', mode);
+    }
+    setTheme(localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+    themeToggle.addEventListener('click', ()=> setTheme(htmlEl.classList.contains('dark') ? 'light' : 'dark'));
+
+    // Reveal animations
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); } });
+    },{threshold:0.12});
+    document.querySelectorAll('.reveal').forEach(el=> io.observe(el));
+
+    // Toast utility
+    let toastTimer;
+    function toast(msg){
+      let el = document.getElementById('toast');
+      if(!el){ el = document.createElement('div'); el.id='toast'; el.className='fixed bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded-md bg-stone-900 text-white dark:bg-white dark:text-stone-900 shadow'; document.body.appendChild(el); }
+      el.textContent = msg; el.style.opacity='0'; el.style.transition='opacity .3s ease, transform .3s ease';
+      requestAnimationFrame(()=>{ el.style.opacity='1'; el.style.transform='translate(-50%, 0)'; });
+      clearTimeout(toastTimer); toastTimer = setTimeout(()=>{ el.style.opacity='0'; }, 2000);
+    }
+
+    // Currency
+    function inr(n){ return '₹' + n.toLocaleString('en-IN'); }
+
+    // Data — Hair products
+    const products = [
+      { id: 1001, title: 'Gentle Daily Cleanser (Sulfate-Free Shampoo) 250ml', price: 499, step:'Cleanse', category:'Shampoo', rating: 4.6, stock: 50, brand:'Mavrick Lab', img:'https://images.unsplash.com/photo-1512203492609-8f27967a9e4c?q=80&w=1400&auto=format&fit=crop', desc:'Low-foam, pH-balanced cleanser that lifts buildup without stripping.', hairTypes:['Straight','Wavy','Curly','Coily'], concerns:['Dryness','Oily Scalp','Frizz'], ingredients:['Aloe Vera','Glycerin','Panthenol'], sulfateFree:true, siliconeFree:true, parabenFree:true, colorSafe:true, ph:'5.2–5.6', howTo:'Massage into wet scalp for 60 seconds. Rinse. Repeat if needed.' },
+      { id: 1002, title: 'Hydra-Repair Conditioner 250ml', price: 549, step:'Condition', category:'Conditioner', rating: 4.5, stock: 60, brand:'Mavrick Lab', img:'https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?q=80&w=1400&auto=format&fit=crop', desc:'Moisture-sealing conditioner for softness and shine.', hairTypes:['Wavy','Curly','Coily','Straight'], concerns:['Dryness','Frizz','Color Damage'], ingredients:['Argan Oil','Shea Butter','Hyaluronic Acid'], sulfateFree:true, siliconeFree:false, parabenFree:true, colorSafe:true, ph:'4.5–5.0', howTo:'Apply mid-lengths to ends. Leave 2–3 min. Rinse.' },
+      { id: 1003, title: 'Scalp Reset Clarifying Shampoo 200ml', price: 449, step:'Cleanse', category:'Shampoo', rating: 4.2, stock: 35, brand:'ClearCo', img:'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?q=80&w=1400&auto=format&fit=crop', desc:'Weekly clarifier to remove heavy build-up and hard-water minerals.', hairTypes:['Straight','Wavy','Curly','Coily'], concerns:['Oily Scalp','Dandruff'], ingredients:['Apple Cider Vinegar','Chelators'], sulfateFree:false, siliconeFree:true, parabenFree:true, colorSafe:false, ph:'5.5', howTo:'Use once weekly. Follow with hydrating mask.' },
+      { id: 1004, title: 'Anti-Dandruff Scalp Serum 60ml', price: 699, step:'Treat', category:'Serum', rating: 4.4, stock: 45, brand:'DermaRoot', img:'https://images.unsplash.com/photo-1562322140-e0a9c7b2e2d7?q=80&w=1400&auto=format&fit=crop', desc:'Leave-on serum to reduce flaking and soothe itch.', hairTypes:['Straight','Wavy','Curly','Coily'], concerns:['Dandruff','Oily Scalp'], ingredients:['1% Zinc Pyrithione','Tea Tree','Niacinamide'], sulfateFree:true, siliconeFree:true, parabenFree:true, colorSafe:true, ph:'5.0', howTo:'Apply to dry scalp nightly for 2–4 weeks. Do not rinse.' },
+      { id: 1005, title: 'Strength & Length Hair Growth Tonic 100ml', price: 799, step:'Treat', category:'Tonic', rating: 4.1, stock: 30, brand:'GrowWell', img:'https://images.unsplash.com/photo-1605497788044-5a32c7078486?q=80&w=1400&auto=format&fit=crop', desc:'Targets hair fall and supports thicker-looking hair.', hairTypes:['Straight','Wavy','Curly','Coily'], concerns:['Hairfall'], ingredients:['3% Redensyl','Caffeine','Biotin'], sulfateFree:true, siliconeFree:true, parabenFree:true, colorSafe:true, ph:'5.2', howTo:'Massage into scalp daily. Leave in.' },
+      { id: 1006, title: 'Curl Defining Leave-In Cream 200ml', price: 649, step:'Style', category:'Leave-in', rating: 4.7, stock: 55, brand:'CoilCraft', img:'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?q=80&w=1400&auto=format&fit=crop', desc:'Defines curls and coils while fighting frizz without crunch.', hairTypes:['Wavy','Curly','Coily'], concerns:['Frizz','Dryness'], ingredients:['Shea Butter','Flaxseed','Aloe'], sulfateFree:true, siliconeFree:true, parabenFree:true, colorSafe:true, ph:'5.0', howTo:'Apply to damp hair in sections. Scrunch and air dry or diffuse.' },
+      { id: 1007, title: 'Lightweight Air-Dry Cream 150ml', price: 599, step:'Style', category:'Cream', rating: 4.3, stock: 40, brand:'Breeze', img:'https://images.unsplash.com/photo-1517832207067-4db24a2ae47c?q=80&w=1400&auto=format&fit=crop', desc:'Smooths flyaways and speeds up air-dry time for straight/wavy hair.', hairTypes:['Straight','Wavy'], concerns:['Frizz','Color Damage'], ingredients:['Dimethicone','Squalane','Vitamin E'], sulfateFree:true, siliconeFree:false, parabenFree:true, colorSafe:true, ph:'5.3', howTo:'Work through mid-lengths to ends. Do not rinse.' },
+      { id: 1008, title: 'Repair Protein Mask 200ml', price: 699, step:'Treat', category:'Mask', rating: 4.5, stock: 25, brand:'FiberFix', img:'https://images.unsplash.com/photo-1598440946483-688de3fc06d9?q=80&w=1400&auto=format&fit=crop', desc:'Reinforces weak, damaged hair with balanced proteins.', hairTypes:['Straight','Wavy','Curly'], concerns:['Color Damage','Hairfall','Dryness'], ingredients:['Hydrolyzed Keratin','Amino Acids'], sulfateFree:true, siliconeFree:true, parabenFree:true, colorSafe:true, ph:'4.5', howTo:'After shampoo, apply 5–10 min. Rinse and follow with conditioner.' },
+      { id: 1009, title: 'Ultra Moisture Hair Oil 50ml', price: 549, step:'Style', category:'Oil', rating: 4.2, stock: 70, brand:'Nourish', img:'https://images.unsplash.com/photo-1615486363877-f54f5f6f6fca?q=80&w=1400&auto=format&fit=crop', desc:'Non-greasy blend to seal moisture and add shine.', hairTypes:['Wavy','Curly','Coily'], concerns:['Dryness','Frizz'], ingredients:['Argan Oil','Jojoba','Vitamin F'], sulfateFree:true, siliconeFree:true, parabenFree:true, colorSafe:true, ph:'—', howTo:'Use 1–3 drops on lengths and ends after styling.' },
+      { id: 1010, title: 'Color Shield Shampoo 250ml', price: 579, step:'Cleanse', category:'Shampoo', rating: 4.4, stock: 40, brand:'HueCare', img:'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?q=80&w=1400&auto=format&fit=crop', desc:'Low pH shampoo that preserves color and shine.', hairTypes:['Straight','Wavy','Curly'], concerns:['Color Damage','Dryness'], ingredients:['UV Filters','Amino Acids'], sulfateFree:true, siliconeFree:true, parabenFree:true, colorSafe:true, ph:'4.8–5.2', howTo:'Lather gently. Rinse with cool water.' },
+      { id: 1011, title: 'Tea Tree Scalp Scrub 120g', price: 499, step:'Treat', category:'Scrub', rating: 4.0, stock: 26, brand:'DermaRoot', img:'https://images.unsplash.com/photo-1582582494700-339f87a18f0b?q=80&w=1400&auto=format&fit=crop', desc:'Exfoliating scrub to decongest oily, flaky scalps.', hairTypes:['Straight','Wavy','Curly','Coily'], concerns:['Oily Scalp','Dandruff'], ingredients:['Tea Tree','Salicylic Acid'], sulfateFree:true, siliconeFree:true, parabenFree:true, colorSafe:true, ph:'5.2', howTo:'Use pre-shampoo on damp scalp. Massage 2–3 min. Rinse.' },
+      { id: 1012, title: 'Weightless Shine Serum 50ml', price: 629, step:'Style', category:'Serum', rating: 4.6, stock: 48, brand:'Sheen', img:'https://images.unsplash.com/photo-1611930021954-5e31f4f9b0c8?q=80&w=1400&auto=format&fit=crop', desc:'Instant shine and frizz control without heaviness.', hairTypes:['Straight','Wavy'], concerns:['Frizz','Color Damage'], ingredients:['Cyclomethicone','Argan Extract'], sulfateFree:true, siliconeFree:false, parabenFree:true, colorSafe:true, ph:'—', howTo:'Apply 1 pump to dry hair as a finishing step.' },
+      { id: 1013, title: 'Moisture Lock Leave-In Conditioner 200ml', price: 599, step:'Style', category:'Leave-in', rating: 4.5, stock: 64, brand:'HydraHue', img:'https://images.unsplash.com/photo-1598440946947-6fcf6b23f0b0?q=80&w=1400&auto=format&fit=crop', desc:'Lightweight leave-in for daily hydration and detangling.', hairTypes:['Straight','Wavy','Curly'], concerns:['Dryness','Frizz'], ingredients:['Hyaluronic Acid','Aloe','Panthenol'], sulfateFree:true, siliconeFree:true, parabenFree:true, colorSafe:true, ph:'5.0', howTo:'Mist or apply to damp hair. Do not rinse.' },
+      { id: 1014, title: 'Coil Custard Gel 200g', price: 579, step:'Style', category:'Gel', rating: 4.3, stock: 38, brand:'CoilCraft', img:'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=1400&auto=format&fit=crop', desc:'Flexible hold gel for defined coils without flaking.', hairTypes:['Curly','Coily'], concerns:['Frizz','Dryness'], ingredients:['Flaxseed','Aloe','PVP'], sulfateFree:true, siliconeFree:true, parabenFree:true, colorSafe:true, ph:'5.3', howTo:'Glaze over leave-in on wet hair. Air dry or diffuse.' },
+      { id: 1015, title: 'Bond Repair Conditioner 250ml', price: 699, step:'Condition', category:'Conditioner', rating: 4.6, stock: 45, brand:'FiberFix', img:'https://images.unsplash.com/photo-1629198735660-c86dc8d85222?q=80&w=1400&auto=format&fit=crop', desc:'Bond-building technology to reduce breakage and split ends.', hairTypes:['Straight','Wavy','Curly','Coily'], concerns:['Color Damage','Hairfall'], ingredients:['Bonding Polymers','Arginine'], sulfateFree:true, siliconeFree:true, parabenFree:true, colorSafe:true, ph:'4.8', howTo:'Leave 3–5 min after shampoo. Rinse thoroughly.' },
+      { id: 1016, title: 'Balancing Scalp Shampoo 250ml', price: 529, step:'Cleanse', category:'Shampoo', rating: 4.1, stock: 52, brand:'DermaRoot', img:'https://images.unsplash.com/photo-1582582494571-2469f6df3b4a?q=80&w=1400&auto=format&fit=crop', desc:'Balances oil production and refreshes scalp.', hairTypes:['Straight','Wavy'], concerns:['Oily Scalp'], ingredients:['Niacinamide','Green Tea'], sulfateFree:true, siliconeFree:true, parabenFree:true, colorSafe:true, ph:'5.3', howTo:'Massage into scalp 1–2 min. Rinse.' },
+      { id: 1017, title: 'Deep Restore Mask 200ml', price: 749, step:'Treat', category:'Mask', rating: 4.7, stock: 33, brand:'HydraHue', img:'https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=1400&auto=format&fit=crop', desc:'Intense hydration for very dry hair.', hairTypes:['Wavy','Curly','Coily'], concerns:['Dryness'], ingredients:['Shea Butter','Murumuru','Ceramides'], sulfateFree:true, siliconeFree:true, parabenFree:true, colorSafe:true, ph:'4.7', howTo:'Apply after shampoo for 10–15 min. Rinse.' },
+      { id: 1018, title: 'Heat Protect Spray 150ml', price: 499, step:'Style', category:'Spray', rating: 4.2, stock: 58, brand:'Sheen', img:'https://images.unsplash.com/photo-1616469822111-c513032f7dae?q=80&w=1400&auto=format&fit=crop', desc:'Protects up to 230°C and adds lightweight shine.', hairTypes:['Straight','Wavy','Curly'], concerns:['Color Damage','Frizz'], ingredients:['Amino Silicones','Panthenol'], sulfateFree:true, siliconeFree:false, parabenFree:true, colorSafe:true, ph:'—', howTo:'Spray on damp hair before heat styling.' },
+      { id: 1019, title: 'Soothing Scalp Tonic 100ml', price: 579, step:'Treat', category:'Tonic', rating: 4.3, stock: 42, brand:'DermaRoot', img:'https://images.unsplash.com/photo-1544168190-79c17527004f?q=80&w=1400&auto=format&fit=crop', desc:'Calms irritation and redness on sensitive scalps.', hairTypes:['Straight','Wavy','Curly','Coily'], concerns:['Dandruff','Oily Scalp'], ingredients:['Allantoin','Aloe','Panthenol'], sulfateFree:true, siliconeFree:true, parabenFree:true, colorSafe:true, ph:'5.0', howTo:'Apply after wash on scalp. Do not rinse.' },
+      { id: 1020, title: 'Volume Boost Foam 150ml', price: 529, step:'Style', category:'Foam', rating: 4.0, stock: 37, brand:'Breeze', img:'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=1400&auto=format&fit=crop', desc:'Adds lift and volume without stiffness.', hairTypes:['Straight','Wavy'], concerns:['Oily Scalp','Flatness'], ingredients:['Rice Protein','Polymers'], sulfateFree:true, siliconeFree:true, parabenFree:true, colorSafe:true, ph:'—', howTo:'Dispense and apply at roots on damp hair.' }
+    ];
+
+    const HAIR_TYPES = ['All','Straight','Wavy','Curly','Coily'];
+    const CONCERNS = ['All','Frizz','Dandruff','Hairfall','Dryness','Color Damage','Oily Scalp'];
+
+    // State
+    let query = '';
+    let activeType = 'All';
+    let activeConcern = 'All';
+    let sortBy = 'pop';
+    let maxPrice = Math.max(...products.map(p=>p.price));
+    let filterSulfate = false, filterSilicone = false, filterColorSafe = false;
+
+    // Elements
+    const grid = document.getElementById('productGrid');
+    const emptyState = document.getElementById('emptyState');
+    const searchInput = document.getElementById('searchInput');
+    const searchInputMobile = document.getElementById('searchInputMobile');
+    const priceRange = document.getElementById('priceRange');
+    const priceLabel = document.getElementById('priceLabel');
+    const sortSel = document.getElementById('sortBy');
+    const typeChipsWrap = document.getElementById('typeChips');
+    const concernChipsWrap = document.getElementById('concernChips');
+    const fltSulfate = document.getElementById('fltSulfate');
+    const fltSilicone = document.getElementById('fltSilicone');
+    const fltColorSafe = document.getElementById('fltColorSafe');
+
+    // LocalStorage
+    const CART_KEY = 'hc_cart';
+    const WISH_KEY = 'hc_wishlist';
+    function loadCart(){ try{ return JSON.parse(localStorage.getItem(CART_KEY)) || []; } catch { return []; } }
+    function saveCart(arr){ localStorage.setItem(CART_KEY, JSON.stringify(arr)); updateCounts(); }
+    function loadWish(){ try{ return JSON.parse(localStorage.getItem(WISH_KEY)) || []; } catch { return []; } }
+    function saveWish(arr){ localStorage.setItem(WISH_KEY, JSON.stringify(arr)); updateCounts(); }
+
+    // Counts
+    function updateCounts(){
+      const cart = loadCart(); const wish = loadWish();
+      document.getElementById('cartCount').textContent = String(cart.reduce((a,c)=>a+c.qty,0));
+      document.getElementById('wishCount').textContent = String(wish.length);
+    }
+
+    // Chips
+    function renderTypeChips(){
+      typeChipsWrap.innerHTML = '';
+      HAIR_TYPES.forEach(t=>{
+        const btn = document.createElement('button');
+        btn.className = 'chip'; btn.dataset.type = t; btn.textContent = t;
+        if(t === activeType){ btn.classList.add('bg-stone-900','text-white','dark:bg-white','dark:text-stone-900'); }
+        btn.addEventListener('click', ()=>{ activeType = t; renderTypeChips(); renderProducts(); });
+        typeChipsWrap.appendChild(btn);
+      });
+    }
+    function renderConcernChips(){
+      concernChipsWrap.innerHTML = '';
+      CONCERNS.forEach(c=>{
+        const btn = document.createElement('button');
+        btn.className = 'chip'; btn.dataset.concern = c; btn.textContent = c;
+        if(c === activeConcern){ btn.classList.add('bg-stone-900','text-white','dark:bg-white','dark:text-stone-900'); }
+        btn.addEventListener('click', ()=>{ activeConcern = c; renderConcernChips(); renderProducts(); });
+        concernChipsWrap.appendChild(btn);
+      });
+    }
+
+    // Search handlers
+    function syncSearch(val){ query = val; renderProducts(); }
+    searchInput?.addEventListener('input', (e)=> syncSearch(e.target.value));
+    searchInputMobile?.addEventListener('input', (e)=> syncSearch(e.target.value));
+
+    // Filter toggles
+    fltSulfate.addEventListener('change', ()=>{ filterSulfate = fltSulfate.checked; renderProducts(); });
+    fltSilicone.addEventListener('change', ()=>{ filterSilicone = fltSilicone.checked; renderProducts(); });
+    fltColorSafe.addEventListener('change', ()=>{ filterColorSafe = fltColorSafe.checked; renderProducts(); });
+
+    // Price & sort
+    priceRange.value = maxPrice; priceLabel.textContent = inr(maxPrice);
+    priceRange.addEventListener('input', ()=>{ maxPrice = Number(priceRange.value); priceLabel.textContent = inr(maxPrice); renderProducts(); });
+    sortSel.addEventListener('change', ()=>{ sortBy = sortSel.value; renderProducts(); });
+
+    renderTypeChips(); renderConcernChips(); updateCounts();
+
+    // Wishlist
+    function toggleWish(id){
+      const wish = new Set(loadWish());
+      if(wish.has(id)) wish.delete(id); else wish.add(id);
+      saveWish([...wish]);
+      renderWishPanel();
+      toast(wish.has(id) ? 'Saved to picks' : 'Removed from picks');
+    }
+
+    // Rendering products
+    function filteredProducts(){
+      const wishSet = new Set(loadWish());
+      let arr = products.filter(p=>{
+        const q = query.trim().toLowerCase();
+        const matchesQ = !q || p.title.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q) || p.ingredients.some(i=>i.toLowerCase().includes(q)) || p.concerns.some(c=>c.toLowerCase().includes(q)) || p.category.toLowerCase().includes(q) || p.step.toLowerCase().includes(q);
+        const matchesType = activeType === 'All' || p.hairTypes.includes(activeType);
+        const matchesConcern = activeConcern === 'All' || p.concerns.includes(activeConcern);
+        const matchesPrice = p.price <= maxPrice;
+        const matchesSulfate = !filterSulfate || p.sulfateFree;
+        const matchesSilicone = !filterSilicone || p.siliconeFree;
+        const matchesColor = !filterColorSafe || p.colorSafe;
+        return matchesQ && matchesType && matchesConcern && matchesPrice && matchesSulfate && matchesSilicone && matchesColor;
+      });
+      switch(sortBy){
+        case 'plh': arr.sort((a,b)=>a.price-b.price); break;
+        case 'phl': arr.sort((a,b)=>b.price-a.price); break;
+        case 'new': arr.sort((a,b)=>b.id-a.id); break;
+        default: arr.sort((a,b)=>b.rating-a.rating); // top rated
+      }
+      return arr.map(p=>({...p, wished: wishSet.has(p.id)}));
+    }
+
+    function renderProducts(){
+      const items = filteredProducts();
+      grid.innerHTML = '';
+      emptyState.classList.toggle('hidden', items.length !== 0);
+      items.forEach(p=>{
+        const card = document.createElement('div');
+        card.className = 'p-4 rounded-xl bg-white dark:bg-neutral-900 shadow ring-1 ring-black/5 dark:ring-white/10 flex flex-col';
+        card.innerHTML = `
+          <div class="aspect-square rounded-lg overflow-hidden ring-1 ring-black/5 dark:ring-white/10 cursor-pointer" data-open="${p.id}">
+            <img src="${p.img}" alt="${p.title}" class="w-full h-full object-cover"/>
+          </div>
+          <div class="mt-3 text-xs text-stone-500">${p.brand} • ${p.category} • ${p.step}</div>
+          <h3 class="mt-1 font-semibold line-clamp-2 cursor-pointer" data-open="${p.id}">${p.title}</h3>
+          <div class="mt-1 text-rose-500 text-sm">${'★'.repeat(Math.round(p.rating))}<span class="text-[11px] align-super text-stone-500"> ${p.rating.toFixed(1)}</span></div>
+          <div class="mt-2 text-xs text-stone-500">${p.hairTypes.join(', ')} • Targets: ${p.concerns.join(', ')}</div>
+          <div class="mt-2 flex items-center justify-between">
+            <div class="text-lg font-bold">${inr(p.price)}</div>
+            <button class="px-2 py-1.5 rounded-md text-sm ring-1 ring-black/10 dark:ring-white/20 hover:bg-stone-100 dark:hover:bg-white/10" data-wish="${p.id}">${p.wished ? '♥ Picked' : '♡ Pick'}</button>
+          </div>
+          <button class="mt-3 inline-flex items-center justify-center gap-2 bg-rose-600 hover:bg-rose-700 text-white px-3 py-2 rounded-md shadow" data-add="${p.id}">Add to Cart</button>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // Delegated actions (grid + wishlist panel + modal)
+    document.addEventListener('click', (e)=>{
+      const t = e.target;
+      const addId = t.getAttribute('data-add');
+      const openId = t.getAttribute('data-open');
+      const wishId = t.getAttribute('data-wish');
+      const shareId = t.getAttribute('data-share');
+      if(addId){ addToCart(Number(addId), 1); toast('Added to cart'); }
+      if(openId){ openProductModal(Number(openId)); }
+      if(wishId){ toggleWish(Number(wishId)); renderProducts(); }
+      if(shareId){
+        const p = products.find(x=>x.id===Number(shareId)); if(!p) return;
+        const text = `Check this out: ${p.title} for ${inr(p.price)}`;
+        if(navigator.share){ navigator.share({title:p.title, text, url: location.href}).catch(()=>{}); }
+        else { navigator.clipboard?.writeText(text).then(()=>toast('Copied details to clipboard')); }
+      }
+    });
+
+    // Wishlist Panel
+    const wishPanel = document.getElementById('wishPanel');
+    const btnWishlist = document.getElementById('btnWishlist');
+    const wishItems = document.getElementById('wishItems');
+    btnWishlist.addEventListener('click', ()=>{ wishPanel.classList.remove('hidden'); renderWishPanel(); });
+    wishPanel.addEventListener('click', (e)=>{ if(e.target.hasAttribute('data-close')) wishPanel.classList.add('hidden'); });
+    wishPanel.querySelector('[data-close]').addEventListener('click', ()=> wishPanel.classList.add('hidden'));
+
+    function renderWishPanel(){
+      const ids = loadWish();
+      wishItems.innerHTML = '';
+      if(ids.length === 0){ wishItems.innerHTML = '<div class="text-sm text-stone-500">No items saved yet.</div>'; return; }
+      ids.map(id => products.find(p=>p.id===id)).filter(Boolean).forEach(p=>{
+        const row = document.createElement('div');
+        row.className = 'p-3 rounded-lg ring-1 ring-black/5 dark:ring-white/10 flex gap-3';
+        row.innerHTML = `
+          <img src="${p.img}" class="w-16 h-16 rounded object-cover" alt="${p.title}"/>
+          <div class="flex-1">
+            <div class="text-sm font-medium line-clamp-2">${p.title}</div>
+            <div class="text-sm mt-1">${inr(p.price)}</div>
+            <div class="mt-2 flex gap-2">
+              <button class="px-2 py-1 rounded-md text-xs bg-rose-600 text-white" data-add="${p.id}">Add to Cart</button>
+              <button class="px-2 py-1 rounded-md text-xs ring-1 ring-black/10 dark:ring-white/20" data-wish="${p.id}">Remove</button>
+              <button class="px-2 py-1 rounded-md text-xs ring-1 ring-black/10 dark:ring-white/20" data-open="${p.id}">Details</button>
+            </div>
+          </div>`;
+        wishItems.appendChild(row);
+      });
+    }
+
+    // Cart
+    function getCart(){ return loadCart(); }
+    function setCart(arr){ saveCart(arr); renderCart(); }
+    function addToCart(id, qty){
+      const p = products.find(x=>x.id===id); if(!p) return;
+      const cart = getCart();
+      const idx = cart.findIndex(i=>i.id===id);
+      if(idx>=0){ cart[idx].qty += qty; }
+      else { cart.push({ id, qty: Math.max(1, qty) }); }
+      setCart(cart);
+    }
+    function removeFromCart(id){ setCart(getCart().filter(i=>i.id!==id)); }
+    function setQty(id, qty){
+      const cart = getCart();
+      const item = cart.find(i=>i.id===id); if(!item) return;
+      item.qty = Math.max(1, qty);
+      setCart(cart);
+    }
+
+    const cartDrawer = document.getElementById('cartDrawer');
+    const btnCart = document.getElementById('btnCart');
+    const cartItems = document.getElementById('cartItems');
+    const subTotalEl = document.getElementById('subTotal');
+    const discountEl = document.getElementById('discount');
+    const grandTotalEl = document.getElementById('grandTotal');
+    const couponInput = document.getElementById('coupon');
+    const couponMsg = document.getElementById('couponMsg');
+    let appliedCoupon = '';
+
+    btnCart.addEventListener('click', ()=>{ cartDrawer.classList.remove('hidden'); renderCart(); });
+    cartDrawer.addEventListener('click', (e)=>{ if(e.target.hasAttribute('data-close')) cartDrawer.classList.add('hidden'); });
+    cartDrawer.querySelector('[data-close]').addEventListener('click', ()=> cartDrawer.classList.add('hidden'));
+
+    function renderCart(){
+      const cart = getCart();
+      cartItems.innerHTML = '';
+      if(cart.length === 0){ cartItems.innerHTML = '<div class="text-sm text-stone-500">Your cart is empty.</div>'; updateTotals(); return; }
+      cart.forEach(ci=>{
+        const p = products.find(x=>x.id===ci.id); if(!p) return;
+        const row = document.createElement('div');
+        row.className = 'p-3 rounded-lg ring-1 ring-black/5 dark:ring-white/10 flex gap-3 items-center';
+        row.innerHTML = `
+          <img src="${p.img}" class="w-16 h-16 rounded object-cover" alt="${p.title}"/>
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-medium truncate">${p.title}</div>
+            <div class="text-sm">${inr(p.price)}</div>
+            <div class="mt-2 flex items-center gap-2">
+              <button class="px-2 py-1 rounded-md ring-1 ring-black/10 dark:ring-white/20" data-dec="${p.id}">−</button>
+              <input class="w-14 text-center px-2 py-1 rounded-md bg-stone-50 dark:bg-neutral-800 outline-none" value="${ci.qty}" data-qty="${p.id}"/>
+              <button class="px-2 py-1 rounded-md ring-1 ring-black/10 dark:ring-white/20" data-inc="${p.id}">+</button>
+              <button class="ml-auto px-2 py-1 rounded-md text-xs text-stone-600 hover:bg-stone-100 dark:text-neutral-300 dark:hover:bg-white/10" data-remove="${p.id}">Remove</button>
+            </div>
+          </div>`;
+        cartItems.appendChild(row);
+      });
+      updateTotals();
+      updateCounts();
+    }
+
+    function updateTotals(){
+      const cart = getCart();
+      const subtotal = cart.reduce((sum, ci)=>{
+        const p = products.find(x=>x.id===ci.id); return sum + (p ? p.price*ci.qty : 0);
+      },0);
+      let discount = 0;
+      if(appliedCoupon.toUpperCase()==='SAVE10' && subtotal>0){ discount = Math.round(subtotal*0.10); couponMsg.textContent = 'Coupon SAVE10 applied (10% off)'; }
+      else if(appliedCoupon){ couponMsg.textContent = 'Invalid coupon'; }
+      else { couponMsg.textContent = ''; }
+      subTotalEl.textContent = inr(subtotal);
+      discountEl.textContent = '-' + inr(discount);
+      grandTotalEl.textContent = inr(Math.max(0, subtotal - discount));
+    }
+
+    document.getElementById('applyCoupon').addEventListener('click', ()=>{ appliedCoupon = couponInput.value.trim(); updateTotals(); });
+    document.getElementById('checkoutBtn').addEventListener('click', ()=>{
+      if(getCart().length===0){ toast('Your cart is empty'); return; }
+      toast('Checkout demo — not implemented');
+    });
+
+    document.addEventListener('click', (e)=>{
+      const t = e.target;
+      const inc = t.getAttribute('data-inc');
+      const dec = t.getAttribute('data-dec');
+      const rem = t.getAttribute('data-remove');
+      if(inc){ const id = Number(inc); addToCart(id, 1); toast('Quantity updated'); }
+      if(dec){ const id = Number(dec); const cart = getCart(); const it = cart.find(i=>i.id===id); if(!it) return; if(it.qty>1){ it.qty--; setCart(cart); toast('Quantity updated'); } }
+      if(rem){ removeFromCart(Number(rem)); toast('Removed from cart'); }
+    });
+
+    document.addEventListener('input', (e)=>{
+      const t = e.target; const qAttr = t.getAttribute('data-qty');
+      if(qAttr){ const id = Number(qAttr); const val = Number(t.value)||1; setQty(id, val); }
+    });
+
+    // Product modal
+    const pm = document.getElementById('productModal');
+    const pmTitle = document.getElementById('pmTitle');
+    const pmMeta = document.getElementById('pmMeta');
+    const pmImg = document.getElementById('pmImg');
+    const pmDesc = document.getElementById('pmDesc');
+    const pmPrice = document.getElementById('pmPrice');
+    const pmSuit = document.getElementById('pmSuit');
+    const pmTargets = document.getElementById('pmTargets');
+    const pmIngr = document.getElementById('pmIngr');
+    const pmFree = document.getElementById('pmFree');
+    const pmPH = document.getElementById('pmPH');
+    const pmHow = document.getElementById('pmHow');
+    const pmQty = document.getElementById('pmQty');
+    const pmAdd = document.getElementById('pmAdd');
+    const pmWish = document.getElementById('pmWish');
+    let pmProduct = null;
+
+    function openProductModal(id){
+      const p = products.find(x=>x.id===id); if(!p) return;
+      pmProduct = p;
+      pmTitle.textContent = p.title;
+      pmMeta.textContent = p.brand + ' • ' + p.category + ' • ' + p.step + ' • ★ ' + p.rating.toFixed(1);
+      pmImg.src = p.img; pmImg.alt = p.title;
+      pmDesc.textContent = p.desc;
+      pmPrice.textContent = inr(p.price);
+      pmSuit.textContent = 'Suitable for: ' + p.hairTypes.join(', ');
+      pmTargets.textContent = 'Targets: ' + p.concerns.join(', ');
+      pmIngr.textContent = 'Key ingredients: ' + p.ingredients.join(', ');
+      pmFree.textContent = 'Free from: ' + [p.sulfateFree?'Sulfates':null, p.siliconeFree?'Silicones':null, p.parabenFree?'Parabens':null].filter(Boolean).join(', ') + (p.colorSafe? (', Color-safe') : '');
+      pmPH.textContent = 'pH: ' + p.ph;
+      pmHow.textContent = 'How to use: ' + p.howTo;
+      pmQty.value = 1;
+      pmWish.textContent = loadWish().includes(p.id) ? '♥ In Picks' : '♡ Save';
+      pm.classList.remove('hidden');
+    }
+    function closeProductModal(){ pm.classList.add('hidden'); }
+    pm.addEventListener('click', (e)=>{ if(e.target.hasAttribute('data-close')) closeProductModal(); });
+    pm.querySelector('[data-close]').addEventListener('click', closeProductModal);
+    pmAdd.addEventListener('click', ()=>{ if(!pmProduct) return; addToCart(pmProduct.id, Math.max(1, Number(pmQty.value)||1)); toast('Added to cart'); closeProductModal(); });
+    pmWish.addEventListener('click', ()=>{ if(!pmProduct) return; toggleWish(pmProduct.id); pmWish.textContent = loadWish().includes(pmProduct.id) ? '♥ In Picks' : '♡ Save'; renderProducts(); });
+
+    // Routine builder
+    const rbType = document.getElementById('rbType');
+    const rbConcern = document.getElementById('rbConcern');
+    const rbBuild = document.getElementById('rbBuild');
+    const rbClear = document.getElementById('rbClear');
+    const routineOut = document.getElementById('routineOut');
+
+    rbBuild.addEventListener('click', ()=>{
+      const t = rbType.value; const c = rbConcern.value;
+      const eligible = products.filter(p=>p.hairTypes.includes(t) && p.concerns.includes(c));
+      const steps = ['Cleanse','Condition','Treat','Style'];
+      routineOut.innerHTML = '';
+      steps.forEach(step=>{
+        const best = eligible.filter(p=>p.step===step).sort((a,b)=>b.rating-a.rating)[0];
+        if(best){
+          const card = document.createElement('div');
+          card.className = 'p-4 rounded-xl bg-white dark:bg-neutral-900 shadow ring-1 ring-black/5 dark:ring-white/10 flex flex-col';
+          card.innerHTML = `
+            <div class="text-xs text-stone-500">${best.brand} • ${best.category} • ${best.step}</div>
+            <h4 class="mt-1 font-semibold line-clamp-2">${best.title}</h4>
+            <div class="mt-1 text-rose-500 text-sm">${'★'.repeat(Math.round(best.rating))}<span class="text-[11px] align-super text-stone-500"> ${best.rating.toFixed(1)}</span></div>
+            <div class="mt-2 text-sm text-stone-600 dark:text-neutral-300 line-clamp-2">${best.desc}</div>
+            <div class="mt-2 flex items-center justify-between">
+              <div class="text-lg font-bold">${inr(best.price)}</div>
+              <div class="text-xs text-stone-500">Targets: ${best.concerns.join(', ')}</div>
+            </div>
+            <div class="mt-3 flex gap-2">
+              <button class="flex-1 inline-flex items-center justify-center gap-2 bg-rose-600 hover:bg-rose-700 text-white px-3 py-2 rounded-md shadow" data-add="${best.id}">Add to Cart</button>
+              <button class="px-3 py-2 rounded-md ring-1 ring-black/10 dark:ring-white/20" data-open="${best.id}">Details</button>
+            </div>`;
+          routineOut.appendChild(card);
+        } else {
+          const empty = document.createElement('div');
+          empty.className = 'p-4 rounded-xl bg-white dark:bg-neutral-900 ring-1 ring-black/5 dark:ring-white/10 text-sm text-stone-500';
+          empty.textContent = step + ': No match found for this combo';
+          routineOut.appendChild(empty);
+        }
+      });
+      if(!routineOut.children.length){ routineOut.innerHTML = '<div class="text-sm text-stone-500">No matches found. Try a different concern.</div>'; }
+    });
+    rbClear.addEventListener('click', ()=>{ routineOut.innerHTML=''; });
+
+    // Ingredient glossary
+    const INGREDIENTS = [
+      { name:'Niacinamide (Vitamin B3)', benefits:'Balances oil, strengthens scalp barrier, supports healthy growth.', bestFor:['Oily Scalp','Hairfall'], avoidIf: 'Rarely irritating; patch test on sensitive scalp.' },
+      { name:'Tea Tree Oil', benefits:'Antimicrobial and soothing; reduces flaking and itch.', bestFor:['Dandruff','Oily Scalp'], avoidIf: 'Avoid high concentrations if sensitive; can be drying.' },
+      { name:'Hyaluronic Acid', benefits:'Humectant that draws moisture to hair, improving softness.', bestFor:['Dryness','Frizz'], avoidIf: 'Layer with emollients to prevent flash-dry.' },
+      { name:'Argan Oil', benefits:'Seals moisture, adds shine, reduces frizz.', bestFor:['Dryness','Frizz','Color Damage'], avoidIf: 'Fine hair may get weighed down with excess.' },
+      { name:'Salicylic Acid (BHA)', benefits:'Exfoliates scalp, unclogs follicles, reduces flakes.', bestFor:['Oily Scalp','Dandruff'], avoidIf: 'Sensitive scalp may prefer lower frequency.' },
+      { name:'Hydrolyzed Keratin', benefits:'Protein that helps reduce breakage and repair damage.', bestFor:['Color Damage','Hairfall'], avoidIf: 'Protein-sensitive hair should alternate with moisture.' },
+      { name:'Shea Butter', benefits:'Rich emollient that locks in hydration.', bestFor:['Dryness','Frizz'], avoidIf: 'May be heavy for very fine hair types.' }
+    ];
+
+    const ingSearch = document.getElementById('ingSearch');
+    const ingGrid = document.getElementById('ingGrid');
+    function renderIngredients(){
+      const q = (ingSearch.value||'').toLowerCase();
+      ingGrid.innerHTML = '';
+      INGREDIENTS.filter(i=>!q || i.name.toLowerCase().includes(q) || i.benefits.toLowerCase().includes(q) || i.bestFor.join(',').toLowerCase().includes(q)).forEach(i=>{
+        const card = document.createElement('div');
+        card.className = 'p-4 rounded-lg bg-white dark:bg-neutral-900 ring-1 ring-black/5 dark:ring-white/10';
+        card.innerHTML = `
+          <div class="font-semibold">${i.name}</div>
+          <div class="mt-1 text-sm text-stone-600 dark:text-neutral-300">${i.benefits}</div>
+          <div class="mt-2 text-xs text-stone-500"><span class="font-medium">Best for:</span> ${i.bestFor.join(', ')}</div>
+          <div class="mt-1 text-xs text-stone-500"><span class="font-medium">Avoid if:</span> ${i.avoidIf}</div>`;
+        ingGrid.appendChild(card);
+      });
+      if(!ingGrid.children.length){ ingGrid.innerHTML = '<div class="text-sm text-stone-500">No ingredients match your search.</div>'; }
+    }
+    ingSearch.addEventListener('input', renderIngredients);
+    renderIngredients();
+
+    // Hair Encyclopedia (tabs)
+    const hairTabs = document.getElementById('hairTabs');
+    const hairTabContent = document.getElementById('hairTabContent');
+    const HAIR_TOPICS = [
+      { key:'growth', title:'Growth Cycle', content:`
+        <p>Hair grows in cycles: <strong>Anagen</strong> (growth, 2–7 years), <strong>Catagen</strong> (transition, ~2 weeks), and <strong>Telogen</strong> (rest, ~3 months). Daily shedding of 50–100 strands is normal.</p>
+        <ul class="mt-2 list-disc pl-5">
+          <li>Genes, hormones, nutrition, and stress influence cycle length.</li>
+          <li>Support growth with gentle scalp care, adequate protein/iron, and consistent routines.</li>
+        </ul>` },
+      { key:'structure', title:'Hair Structure & pH', content:`
+        <p>Each fiber has a <strong>cuticle</strong> (scales), <strong>cortex</strong> (strength/pigment), and sometimes a <strong>medulla</strong>. Healthy hair prefers a slightly acidic pH ~4.5–5.5.</p>
+        <ul class="mt-2 list-disc pl-5">
+          <li>Low-pH cleansers and conditioners smooth the cuticle, boosting shine and reducing frizz.</li>
+          <li>Harsh alkalinity raises cuticles → roughness and color fade.</li>
+        </ul>` },
+      { key:'porosity', title:'Porosity & Moisture', content:`
+        <p>Porosity describes how easily hair absorbs and holds water.</p>
+        <ul class="mt-2 list-disc pl-5">
+          <li><strong>Low</strong>: Tight cuticles. Use lightweight hydrators (aloe, HA) and occasional heat to help masks penetrate.</li>
+          <li><strong>Medium</strong>: Balanced; rotate moisture and protein.</li>
+          <li><strong>High</strong>: Gaps in cuticle; use richer masks/oils and seal moisture.</li>
+        </ul>` },
+      { key:'density', title:'Density vs Thickness', content:`
+        <p>Density = number of strands per area. Thickness = individual strand diameter.</p>
+        <ul class="mt-2 list-disc pl-5">
+          <li>Fine hair: avoid heavy butters; favor lightweight leave-ins.</li>
+          <li>Thick/coarse hair: richer creams and oils help control frizz.</li>
+        </ul>` },
+      { key:'scalp', title:'Scalp Microbiome', content:`
+        <p>A balanced scalp supports healthy hair. Over-cleansing can disrupt the microbiome.</p>
+        <ul class="mt-2 list-disc pl-5">
+          <li>For oiliness: gentle, frequent cleansing; salicylic acid or niacinamide.</li>
+          <li>For flakes/itch: tea tree, zinc, or soothing tonics; avoid harsh scraping.</li>
+        </ul>` },
+      { key:'damage', title:'Heat & Mechanical Damage', content:`
+        <p>High heat and rough handling cause chipped cuticles and breakage.</p>
+        <ul class="mt-2 list-disc pl-5">
+          <li>Use heat protectants up to 230°C; lower temp on fine or damaged hair.</li>
+          <li>Microfiber towels, wide-tooth combs, and protective styles reduce stress.</li>
+        </ul>` },
+      { key:'color', title:'Color Care', content:`
+        <p>Color-treated hair benefits from low-pH, color-safe products and UV protection.</p>
+        <ul class="mt-2 list-disc pl-5">
+          <li>Wash with cool water and limit heat styling.</li>
+          <li>Deep condition weekly and use bond-strengthening conditioners.</li>
+        </ul>` },
+      { key:'ingredients', title:'Ingredients: Seek & Avoid', content:`
+        <p>Match actives to your goals and hair type.</p>
+        <ul class="mt-2 list-disc pl-5">
+          <li>Hydration: hyaluronic acid, glycerin; Sealing: argan/jojoba.</li>
+          <li>Scalp: niacinamide, tea tree, salicylic acid.</li>
+          <li>Strength: hydrolyzed keratin, amino acids.</li>
+        </ul>` }
+    ];
+    let activeHairTab = localStorage.getItem('hc_tab') || HAIR_TOPICS[0].key;
+    function renderHairTabs(){
+      hairTabs.innerHTML = '';
+      HAIR_TOPICS.forEach(t=>{
+        const b = document.createElement('button');
+        b.className = 'chip'; b.textContent = t.title; b.dataset.tab = t.key;
+        if(t.key===activeHairTab){ b.classList.add('bg-stone-900','text-white','dark:bg-white','dark:text-stone-900'); }
+        b.addEventListener('click', ()=>{ activeHairTab = t.key; localStorage.setItem('hc_tab', activeHairTab); renderHairTabs(); renderHairTabContent(); });
+        hairTabs.appendChild(b);
+      });
+    }
+    function renderHairTabContent(){
+      const topic = HAIR_TOPICS.find(x=>x.key===activeHairTab) || HAIR_TOPICS[0];
+      hairTabContent.innerHTML = topic.content;
+    }
+    if(hairTabs && hairTabContent){ renderHairTabs(); renderHairTabContent(); }
+
+    // Hair Profile Quiz
+    const hairQuiz = document.getElementById('hairQuiz');
+    const hqType = document.getElementById('hqType');
+    const hqPorosity = document.getElementById('hqPorosity');
+    const hqDensity = document.getElementById('hqDensity');
+    const hqThickness = document.getElementById('hqThickness');
+    const hqScalp = document.getElementById('hqScalp');
+    const hqConcern = document.getElementById('hqConcern');
+    const hqColorTreated = document.getElementById('hqColorTreated');
+    const hqHeat = document.getElementById('hqHeat');
+    const hqClear = document.getElementById('hqClear');
+    const quizAdvice = document.getElementById('quizAdvice');
+    const quizResult = document.getElementById('quizResult');
+    const PROFILE_KEY = 'hc_profile';
+
+    function pickBestForStep(step, profile){
+      let cand = products.filter(p=>p.step===step && p.hairTypes.includes(profile.type));
+      if(profile.concern){
+        const byConcern = cand.filter(p=>p.concerns.includes(profile.concern));
+        if(byConcern.length) cand = byConcern;
+      }
+      if(profile.colorTreated){
+        const colorSafe = cand.filter(p=>p.colorSafe);
+        if(colorSafe.length) cand = colorSafe;
+      }
+      // For high porosity, prefer richer options on Treat/Style
+      if(profile.porosity==='High' && (step==='Treat' || step==='Style')){
+        const richer = cand.filter(p=>/(Mask|Oil|Leave-in|Tonic|Serum)/i.test(p.category));
+        if(richer.length) cand = richer;
+      }
+      cand.sort((a,b)=>b.rating-a.rating || a.price-b.price);
+      return cand[0] || null;
+    }
+
+    function recommendRoutine(profile){
+      const steps = ['Cleanse','Condition','Treat','Style'];
+      const picks = [];
+      steps.forEach(s=>{
+        const best = pickBestForStep(s, profile);
+        if(best && !picks.some(x=>x.id===best.id)) picks.push(best);
+      });
+      // Add heat protect if user heat styles and it's not already in picks
+      if(profile.heatStyle){
+        const hp = products.find(p=>p.title.toLowerCase().includes('heat protect') || (p.category==='Spray' && /heat/i.test(p.title)));
+        if(hp && !picks.some(x=>x.id===hp.id)) picks.push(hp);
+      }
+      return picks;
+    }
+
+    function buildAdvice(profile){
+      const tips = [];
+      // Scalp
+      if(profile.scalp==='Oily') tips.push('Cleanse frequently (daily/alt days) with gentle, sulfate-free shampoos; use niacinamide or salicylic acid for scalp balance.');
+      if(profile.scalp==='Dry') tips.push('Use soothing tonics and limit harsh clarifiers; add pre-wash oiling and deep conditioning.');
+      if(profile.scalp==='Sensitive') tips.push('Patch test actives; prefer fragrance-light, low-pH formulas and avoid aggressive scrubs.');
+      // Porosity
+      if(profile.porosity==='Low') tips.push('Use lightweight hydrators and occasional warm heat to help treatments penetrate.');
+      if(profile.porosity==='High') tips.push('Layer humectants + emollients and seal with oils or creams; use bond/ protein masks weekly.');
+      // Thickness/Density
+      if(profile.thickness==='Fine') tips.push('Avoid heavy butters; choose weightless leave-ins and foams; use low heat.');
+      if(profile.thickness==='Coarse') tips.push('Richer creams and oils can enhance softness and reduce frizz.');
+      if(profile.colorTreated) tips.push('Prioritize color-safe, low-pH cleansers; rinse with cool water and use bond-repair conditioners.');
+      if(profile.heatStyle) tips.push('Always apply a heat protectant and keep temperatures moderate to prevent cuticle damage.');
+      return tips;
+    }
+
+    function renderQuiz(profile){
+      if(!profile){ quizAdvice.textContent=''; quizResult.innerHTML=''; return; }
+      const tips = buildAdvice(profile);
+      quizAdvice.innerHTML = `
+        <div class="p-4 rounded-lg bg-stone-50 dark:bg-white/5 ring-1 ring-black/5 dark:ring-white/10">
+          <div class="font-semibold">Your Hair Profile</div>
+          <div class="text-xs text-stone-500">Type: ${profile.type} • Porosity: ${profile.porosity} • Density: ${profile.density} • Thickness: ${profile.thickness} • Scalp: ${profile.scalp} • Concern: ${profile.concern} ${profile.colorTreated? '• Color-treated':''} ${profile.heatStyle? '• Heat styles':''}</div>
+          <ul class="mt-2 list-disc pl-5">${tips.map(t=>`<li>${t}</li>`).join('')}</ul>
+        </div>`;
+      const picks = recommendRoutine(profile);
+      quizResult.innerHTML = '';
+      picks.forEach(p=>{
+        const card = document.createElement('div');
+        card.className = 'p-4 rounded-xl bg-white dark:bg-neutral-900 shadow ring-1 ring-black/5 dark:ring-white/10 flex flex-col';
+        card.innerHTML = `
+          <div class="text-xs text-stone-500">${p.brand} • ${p.category} • ${p.step}</div>
+          <h4 class="mt-1 font-semibold line-clamp-2">${p.title}</h4>
+          <div class="mt-1 text-rose-500 text-sm">${'★'.repeat(Math.round(p.rating))}<span class="text-[11px] align-super text-stone-500"> ${p.rating.toFixed(1)}</span></div>
+          <div class="mt-2 text-sm text-stone-600 dark:text-neutral-300 line-clamp-2">${p.desc}</div>
+          <div class="mt-2 flex items-center justify-between">
+            <div class="text-lg font-bold">${inr(p.price)}</div>
+            <div class="text-xs text-stone-500">Targets: ${p.concerns.join(', ')}</div>
+          </div>
+          <div class="mt-3 flex gap-2">
+            <button class="flex-1 inline-flex items-center justify-center gap-2 bg-rose-600 hover:bg-rose-700 text-white px-3 py-2 rounded-md shadow" data-add="${p.id}">Add to Cart</button>
+            <button class="px-3 py-2 rounded-md ring-1 ring-black/10 dark:ring-white/20" data-open="${p.id}">Details</button>
+          </div>`;
+        quizResult.appendChild(card);
+      });
+      if(!quizResult.children.length){ quizResult.innerHTML = '<div class="text-sm text-stone-500">No recommendations available for this combination.</div>'; }
+    }
+
+    hairQuiz?.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const profile = {
+        type: hqType.value,
+        porosity: hqPorosity.value,
+        density: hqDensity.value,
+        thickness: hqThickness.value,
+        scalp: hqScalp.value,
+        concern: hqConcern.value,
+        colorTreated: hqColorTreated.checked,
+        heatStyle: hqHeat.checked
+      };
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+      renderQuiz(profile);
+      toast('Hair profile saved');
+    });
+    hqClear?.addEventListener('click', ()=>{
+      localStorage.removeItem(PROFILE_KEY);
+      quizAdvice.textContent='';
+      quizResult.innerHTML='';
+      toast('Profile cleared');
+    });
+    // Load saved profile
+    try { const saved = JSON.parse(localStorage.getItem(PROFILE_KEY)||'null'); if(saved) renderQuiz(saved); } catch {}
+
+    // Results interactivity: tips ticker, before/after slider, testimonials
+    const HAIR_TIPS = [
+      'Hydration first: apply leave-in on damp hair to lock moisture.',
+      'Clarify weekly if you use heavy stylers or oils.',
+      'Seal moisture with a few drops of oil on ends.',
+      'Detangle from ends up using a wide-tooth comb.',
+      'Lower heat and always use a heat protectant.'
+    ];
+    const tipsEl = document.getElementById('tipsTicker');
+    let tipIndex = 0; setInterval(()=>{ tipIndex=(tipIndex+1)%HAIR_TIPS.length; if(tipsEl){ tipsEl.textContent = HAIR_TIPS[tipIndex]; } }, 3000);
+
+    const baSlider = document.getElementById('baSlider');
+    const baOverlay = document.getElementById('baOverlay');
+    const baHandle = document.getElementById('baHandle');
+    baSlider?.addEventListener('input', ()=>{
+      const v = Number(baSlider.value);
+      if(baOverlay){ baOverlay.style.width = v+'%'; }
+      if(baHandle){ baHandle.style.left = v+'%'; }
+    });
+
+    const TESTIMONIALS = [
+      { name:'Riya • Curly (3B)', text:'My curls finally defined without crunch. The Leave-In + Gel duo is magic! 10/10.' },
+      { name:'Aarav • Wavy (2A)', text:'Air-Dry Cream reduced frizz and cut my drying time. Subtle shine, no grease.' },
+      { name:'Meera • Color-treated', text:'Color Shield + Bond Repair kept my color vibrant after 6 weeks. Love the low pH.' }
+    ];
+    const testiCard = document.getElementById('testiCard');
+    let tIndex = 0;
+    function renderTestimonial(){ if(!testiCard) return; const t = TESTIMONIALS[tIndex]; testiCard.innerHTML = `<div class="text-sm text-stone-700 dark:text-neutral-300">“${t.text}”</div><div class="mt-2 text-xs text-stone-500">${t.name}</div>`; }
+    document.getElementById('testiPrev')?.addEventListener('click', ()=>{ tIndex=(tIndex-1+TESTIMONIALS.length)%TESTIMONIALS.length; renderTestimonial(); });
+    document.getElementById('testiNext')?.addEventListener('click', ()=>{ tIndex=(tIndex+1)%TESTIMONIALS.length; renderTestimonial(); });
+    renderTestimonial();
+
+    // Footer year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Initial render
+    renderProducts();
+  </script>
+</body>
+</html>
